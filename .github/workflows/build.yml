@@ -1,24 +1,27 @@
 name: build
 on:
-  push:
-  pull_request:
+  release:
+    types:
+      - created
+permissions:
+  contents: write
+  # packages: write
+  # issues: write
 jobs:
-  xgo:
+  goreleaser:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Build
-        uses: crazy-max/ghaction-xgo@v3
+      - uses: actions/checkout@v3
         with:
-          xgo_version: latest
-          go_version: 1.21
-          dest: build
-          prefix: get-ip
-          targets: windows/amd64,linux/amd64,linux/arm64,darwin/arm64
-          v: true
-          x: false
-          race: false
-          ldflags: -s -w
-          buildmode: default
-          trimpath: true
+          fetch-depth: 0
+      - run: git fetch --force --tags
+      - uses: actions/setup-go@v4
+        with:
+          go-version: stable
+      - uses: goreleaser/goreleaser-action@v5
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
