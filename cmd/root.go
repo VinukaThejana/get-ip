@@ -19,7 +19,7 @@ var rootCmd = &cobra.Command{
 		defer conn.Close()
 
 		localAddress := conn.LocalAddr().(*net.UDPAddr)
-		fmt.Println(localAddress.IP.String())
+		fmt.Print(localAddress.IP.String())
 	},
 }
 
